@@ -30,7 +30,7 @@ func tcpTun(addr, server, target string, shadow func(net.Conn) net.Conn) {
 	tcpLocal(addr, server, shadow, func(net.Conn) (socks.Addr, error) { return tgt, nil })
 }
 
-// Listen on addr and proxy to server to reach target from getAddr.
+// tcpLocal Listen on addr and proxy to server to reach target from getAddr.
 func tcpLocal(addr, server string, shadow func(net.Conn) net.Conn, getAddr func(net.Conn) (socks.Addr, error)) {
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -150,10 +150,10 @@ func relay(left, right net.Conn) error {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		_, err1 = io.Copy(right, left)
+		_, err1 = io.Copy(right, left) //let right = left
 		right.SetReadDeadline(time.Now().Add(wait)) // unblock read on right
 	}()
-	_, err = io.Copy(left, right)
+	_, err = io.Copy(left, right) //let left = right
 	left.SetReadDeadline(time.Now().Add(wait)) // unblock read on left
 	wg.Wait()
 	if err1 != nil && !errors.Is(err1, os.ErrDeadlineExceeded) { // requires Go 1.15+

@@ -1,3 +1,7 @@
+/* server：插件将从local收到的包进行处理后，转发给server
+ * local：插件将local将要发出的包进行处理后，再向server发出
+ */
+
 package main
 
 import (
